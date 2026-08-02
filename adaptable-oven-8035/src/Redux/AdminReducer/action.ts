@@ -11,7 +11,7 @@ import {
   GET_TOTAL_PAGE,
   POST_PRODUCT_SUCCESS,
 } from "./actionType";
-import { Action, AnyAction, Dispatch } from "redux";
+import { Action, Dispatch } from "redux";
 import { ThunkAction } from "redux-thunk";
 import { RootState } from ".";
 import {

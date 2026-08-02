@@ -1,5 +1,5 @@
 // import { Img } from '@chakra-ui/react';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { styled } from "styled-components";
 import { ProductObject } from "../constrain";
@@ -9,16 +9,10 @@ import {
   Image,
   Text,
   Heading,
-  Flex,
   IconButton,
   useToast,
-  HStack,
-  VStack,
-  Spacer,
-  Grid,
 } from "@chakra-ui/react";
 import { FaTrash } from "react-icons/fa";
-import Navbar from "../Components/Navbar";
 import { LOGIN_SUCCESS } from "../Redux/AuthReducer/actionType";
 import { refreshUserData } from "../Redux/AuthReducer/action";
 import { api } from "../api/axios";
@@ -32,9 +26,10 @@ const AddToCard = () => {
   const toast = useToast();
   const dispatch: any = useDispatch();
   const ActiveUser = useSelector((store: any) => store.authReducer.ActiveUser);
-  const cartItem = useSelector(
+  const rawCart = useSelector(
     (store: any) => store.authReducer.ActiveUser.addToCart
-  ) || [];
+  );
+  const cartItem = useMemo(() => rawCart ?? [], [rawCart]);
   const [total, setTotal] = useState<number>(0);
   const [tax, setTax] = useState<number>(0);
 
@@ -89,7 +84,7 @@ const AddToCard = () => {
             <h1>YOUR CART({cartItem.length})</h1>
           </div>
           <div className="cartItem">
-            {cartItem == undefined || cartItem.length == 0 ? (
+            {cartItem === undefined || cartItem.length === 0 ? (
               <div className="emptycart">YOUR BAG IS EMPTY</div>
             ) : (
               cartItem?.map((el: ProductObject) => {

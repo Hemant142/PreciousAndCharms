@@ -24,7 +24,7 @@ export const reducer=(state=initalState,action: any)=>{
         case GET_PRODUCT_SUCCESS:
 
             return {...state,isLoading:false,products:action.payload.product,
-                totalPages: action.payload. totalPages ,isError:false
+                totalPages: action.payload.totalPages,isError:false
             
             }
 

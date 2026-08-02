@@ -31,7 +31,7 @@ export default function About() {
     </div>
     <div className='con'>
         <div className='first'>
-        <img src='https://media.istockphoto.com/id/664789596/photo/engaging-presentations.jpg?s=612x612&w=0&k=20&c=d4l-pOr8RabwWAhHan0rJoRuDAB4S5RSo55_xyZ3QHc='/>
+        <img src='https://media.istockphoto.com/id/664789596/photo/engaging-presentations.jpg?s=612x612&w=0&k=20&c=d4l-pOr8RabwWAhHan0rJoRuDAB4S5RSo55_xyZ3QHc=' alt="Store presentation"/>
    
     </div>
     

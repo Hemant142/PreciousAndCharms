@@ -3,7 +3,6 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { MdMenu, MdClose } from 'react-icons/md';
 // import logo from "../image/logo-white.png"
 import styled from "styled-components"
-import { Link } from 'react-router-dom';
 import { Avatar } from '@chakra-ui/avatar';
 import { Button } from '@chakra-ui/button';
 import { LOGOUT } from '../Redux/AuthReducer/actionType';

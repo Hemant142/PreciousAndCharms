@@ -2,17 +2,15 @@ import React from "react";
 import Navbar from "./AdminNavbar";
 import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { UserObjectNew } from "../constrain";
 import {
   Container,
   HStack,
   Heading,
-  Text,
   Wrap,
   WrapItem,
 } from "@chakra-ui/layout";
 import { Card, CardBody } from "@chakra-ui/card";
-import { Avatar, Button, Spinner } from "@chakra-ui/react";
+import { Avatar, Spinner } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { SingleUserFetch } from "../Redux/AdminReducer/action";
 
@@ -30,7 +28,7 @@ export const SingleUser = () => {
     }
   }, [id, dispatch]);
 
-  let { name, email, password, addToCart, orderPlaced, address } = single || {};
+  let { name, addToCart, orderPlaced, address } = single || {};
   const latestAddress =
     address && address.length > 0 ? address[address.length - 1] : null;
 

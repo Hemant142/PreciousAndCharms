@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Navbar from "./AdminNavbar";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { postProduct } from "../Redux/AdminReducer/action";
 import { Center, Heading, useToast } from "@chakra-ui/react";
 import {
-  FormControl,
-  FormLabel,
-  Input,
-  Select,
-  Button,
   Card,
   Divider,
   CardBody,
@@ -17,22 +12,10 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { useNavigate, useParams } from "react-router-dom";
 
 export const AddProduct = () => {
-  let { id } = useParams();
-
-  let itemId = Number(id);
-  const navigate = useNavigate();
-  const data = useSelector((state: any) => state.data.data);
   const dispatch = useDispatch();
   const toast = useToast();
-  const [Display, setDisplay] = useState([]);
-  const [avatar, setavatar] = useState("");
-  const [price, setPrice] = useState(0);
-  const [description, setDescription] = useState("");
-  const [rating, setRating] = useState(0);
-  const [name, setName] = useState("");
   interface productObj {
     name: string;
     price: string;
@@ -57,21 +40,6 @@ export const AddProduct = () => {
     
 }
 const [productData,setProductData]=useState(initialState)
-// useEffect(() => {
-//     let Data = data.find((el: any) => el.id == itemId);
-//     setavatar(Data.avatar)
-//     setPrice(Data.price);
-//     setDescription(Data.description);
-    
-
-//     setRating(Data.rating);
-//     setName(Data.name)
-//     // setDisplay(Data)
-//   }, [])
-useEffect(()=>{
-
-},[])
-
 const handleChange=(e:React.ChangeEvent<HTMLSelectElement>)=>{
     const { name, value}=e.target
     setProductData((prev)=>{
@@ -186,7 +154,7 @@ const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
                 />
 
         {
-            productData.name=="Watches" && (
+            productData.name==="Watches" && (
                 <select name="category"  value={productData.category}  onChange={handleChange}>
                         <option value="">Select Product Category for watch</option>
 
@@ -197,7 +165,7 @@ const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
         }
 
 {
-    productData.name=="Jewelry" && (
+    productData.name==="Jewelry" && (
         <select name="category"  value={productData.category}  onChange={handleChange}>
         <option value="">Select Product Category for jewellery</option>
         <option value="Rings">Rings</option>
@@ -216,7 +184,7 @@ const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
                 
 
            {
-            productData.name=="Jewelry" && (
+            productData.name==="Jewelry" && (
                 <select name="brand"  value={productData.brand}  onChange={handleChange}>
                 <option value="">Select Product Brand for Jewellery </option>
                 <option value="Messika">Messika</option>
@@ -235,7 +203,7 @@ const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
 
 
 
-              {productData.name == "Watches" && (
+              {productData.name === "Watches" && (
                 <select
                   name="category"
                   value={productData.category}
@@ -245,7 +213,7 @@ const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
                 </select>
               )}
 
-              {productData.name == "Jewelry" && (
+              {productData.name === "Jewelry" && (
                 <select
                   name="category"
                   value={productData.category}
@@ -265,7 +233,7 @@ const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
                 </select>
               )}
 
-              {productData.name == "Jewelry" && (
+              {productData.name === "Jewelry" && (
                 <select
                   name="brand"
                   value={productData.brand}
@@ -284,7 +252,7 @@ const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
                 </select>
               )}
 
-              {productData.name == "Watches" && (
+              {productData.name === "Watches" && (
                 <select
                   name="brand"
                   value={productData.brand}
@@ -304,7 +272,7 @@ const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
                 </select>
               )}
 
-              {productData.name == "Watches" && (
+              {productData.name === "Watches" && (
                 <input
                   type="text"
                   name="info"

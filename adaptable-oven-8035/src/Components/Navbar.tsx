@@ -7,8 +7,6 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@chakra-ui/layout";
-import { Button } from "@chakra-ui/button";
-import { Avatar } from "@chakra-ui/avatar";
 import { LOGOUT } from "../Redux/AuthReducer/actionType";
 import "./Navbar.css";
 import { Menu, MenuButton, MenuDivider, MenuGroup, MenuItem, MenuList,Heading } from "@chakra-ui/react";
@@ -193,6 +191,7 @@ const Navbar: React.FC = () => {
                           <img
                             className="navimage"
                             src="https://i.pinimg.com/736x/36/3b/fd/363bfd5d90d23927d03b8caa488c5c7b.jpg"
+                            alt="Jewellery collection"
                           ></img>
                         </section>
                       </div>
@@ -227,7 +226,7 @@ const Navbar: React.FC = () => {
             
               <div className="col col_1">
                 <section >
-                   <img className='navimage' src='https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cm9sZXh8ZW58MHx8MHx8fDA%3D&w=1000&q=80'></img>
+                   <img className='navimage' src='https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cm9sZXh8ZW58MHx8MHx8fDA%3D&w=1000&q=80' alt="Luxury watches"></img>
                    </section>
               </div>
             </div>

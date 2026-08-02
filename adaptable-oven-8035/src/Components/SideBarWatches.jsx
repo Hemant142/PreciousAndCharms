@@ -1,4 +1,4 @@
-import { Checkbox, Input, InputGroup, InputLeftElement, useDisclosure } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
@@ -17,7 +17,6 @@ export default function SideBarWatches() {
     const [searchParams, setSearchParams] = useSearchParams();
     const initialBrand = searchParams.getAll("brand");
     const initalOrder = searchParams.get("order");
-    const initalSearch=searchParams.getAll("search")
     // const [gender, setGender] = useState(initialGender || []);
     const [brand, setBrand] = useState(initialBrand|| []);
     const [order, setOrder] = useState(initalOrder || "");
@@ -25,7 +24,6 @@ export default function SideBarWatches() {
     const{name}=useParams()
     console.log(name,"NAme")
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const btnRef = React.useRef()
   // console.log(order,"Category")
   console.log(search)
     useEffect(() => {
@@ -38,7 +36,7 @@ export default function SideBarWatches() {
    }
   
       setSearchParams(params);
-    }, [ brand, order,search]);
+    }, [ brand, order, search, setSearchParams]);
   
    
   

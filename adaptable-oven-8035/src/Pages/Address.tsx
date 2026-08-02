@@ -103,7 +103,7 @@ export const Address = () => {
     if (ad.length !== 0) {
       setareaData(ad[ad.length - 1])
     }
-  }, [])
+  }, [ActiveUser.address])
 
 
   // console.log(ActiveUser.address.length !== 0 && ActiveUser.address[ActiveUser.address.length - 1].house_no, "AUser")

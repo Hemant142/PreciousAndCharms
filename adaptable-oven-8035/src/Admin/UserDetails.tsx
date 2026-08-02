@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { fetchUserData } from '../Redux/AdminReducer/action'
 import { useDispatch, useSelector } from 'react-redux'
 import UserCard from './UserCard'
-import { ProductObject, UserObject, UserObjectNew } from '../constrain'
+import { UserObjectNew } from '../constrain'
 import styled from "styled-components"
 import Navbar from './AdminNavbar'
 
@@ -26,7 +26,7 @@ console.log(users);
   useEffect(()=>{
     dispatch(fetchUserData)
 
-  },[])
+  },[dispatch])
 
 
   return (

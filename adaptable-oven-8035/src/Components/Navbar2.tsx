@@ -7,8 +7,6 @@ import styled from "styled-components"
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box } from '@chakra-ui/layout';
-import { Avatar } from '@chakra-ui/avatar';
-import { Button } from '@chakra-ui/button';
 import { LOGOUT } from '../Redux/AuthReducer/actionType';
 import { Menu, MenuButton, MenuDivider, MenuGroup, MenuItem, MenuList ,Heading} from '@chakra-ui/react';
 import "./Navbar.css";

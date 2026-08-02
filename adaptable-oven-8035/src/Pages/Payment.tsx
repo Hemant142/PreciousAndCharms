@@ -138,7 +138,7 @@ export const Payment = () => {
         <div className="popup">
            
           <div className="popup-content">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Eo_circle_green_checkmark.svg/2048px-Eo_circle_green_checkmark.svg.png"/>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Eo_circle_green_checkmark.svg/2048px-Eo_circle_green_checkmark.svg.png" alt="Order successful"/>
            
             <h2>Order Successful</h2>
             <p>Continue shopping</p>

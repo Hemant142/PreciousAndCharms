@@ -1,9 +1,8 @@
 // import { Search2Icon } from "@chakra-ui/icons";
-import { Checkbox, Input, InputGroup, InputLeftElement, useDisclosure } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
-import { string } from "yargs";
 import "./Sidebar.css"
 import {
   Drawer,
@@ -20,7 +19,6 @@ export const SideBarJewelry = () => {
   const initialBrand = searchParams.getAll("brand");
   const initalCategory = searchParams.getAll("category");
   const initalOrder = searchParams.get("order");
-  const initalSearch = searchParams.getAll("search")
   // const [gender, setGender] = useState(initialGender || []);
   const [brand, setBrand] = useState(initialBrand || []);
   const [order, setOrder] = useState(initalOrder || "");
@@ -29,7 +27,6 @@ export const SideBarJewelry = () => {
   const { name }: any = useParams()
   console.log(name, "NAme")
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const btnRef = React.useRef()
 
 
   // console.log(order,"Category")
@@ -46,7 +43,7 @@ export const SideBarJewelry = () => {
     }
 
     setSearchParams(params);
-  }, [category, brand, order, search]);
+  }, [category, brand, order, search, setSearchParams]);
 
   const handleCategory = (e: any): void => {
     let { value } = e.target;
@@ -584,11 +581,6 @@ input{
   margin-top:5px;
 }
 `;
-
-const RadioButton = styled.div`
-margin:auto;
-`;
-
 
 // const Button = styled.button`
 //   background-color:black;

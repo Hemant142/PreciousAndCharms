@@ -10,8 +10,6 @@ import Dashboard from '../Admin/Dashboard'
 import AllProduct from '../Admin/AllProduct'
 import EditPage from '../Admin/Edit Product'
 import UserDetails from '../Admin/UserDetails'
-import OrderDetails from '../Admin/OrderDetails'
-import CartDetail from '../Admin/CartDetail'
 import ContactUs from '../Pages/ContactUs'
 import Setting from '../Admin/Setting'
 

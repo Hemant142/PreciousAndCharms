@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import banner from '../home-image/bannerv1.jpg';
 import best1 from '../home-image/best1.jpg';
@@ -9,7 +9,7 @@ import gift from "../home-image/gift-wrap.jpeg"
 import categoryimg from "../home-image/category.jpg"
 import abtImg from "../home-image/home-about.png"
 import meetImg from "../home-image/meet.jpeg"
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
 import { NavLink } from 'react-router-dom';

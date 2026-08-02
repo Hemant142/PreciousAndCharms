@@ -14,7 +14,7 @@ import {
   Image,
   Text
 } from '@chakra-ui/react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { useToast } from '@chakra-ui/react'
 import {EditIcon } from '@chakra-ui/icons'
@@ -25,7 +25,6 @@ const EditPage = () => {
   const toast=useToast();
   const navigate =useNavigate();
   const data = useSelector((state: any) => state.data.data);
-  const[Display, setDisplay] = useState([])
   const [avatar, setavatar] = useState("")
   const [price, setPrice] = useState(0);
   const [about, setabout] = useState("");
@@ -35,8 +34,6 @@ const EditPage = () => {
   const [name, setName] = useState("")
 
   //console.log("avatar", avatar, data)
-  const [updatedData, setUpdatedData] = useState([])
-  const dispatch = useDispatch()
   useEffect(() => {
     let Data = data.find((el: any) => String(el.id) === String(id));
     if (!Data) return;
@@ -47,9 +44,7 @@ const EditPage = () => {
     setBrand(Data.brand);
     setRating(Data.rating);
     setName(Data.name)
-    // setDisplay(Data)
-    // handleUpdate
-  }, [updatedData,data,id])
+  }, [data, id])
 
   const handleUpdate = () => {
     const newData = { price: +price, name: name, avatar: avatar, category: category, brand: brand, rating: +rating, about };
@@ -79,7 +74,6 @@ const EditPage = () => {
   // handleUpdate
   
 
-  console.log(updatedData, "upadtedDaat")
   return (
     <div style={{ backgroundColor: "rgb(54, 69, 79)", }}>
       <Navbar />

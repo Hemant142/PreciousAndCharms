@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { deleteData, fetchData, fetchPage } from "../Redux/AdminReducer/action";
 import {
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
   ButtonGroup,
@@ -18,12 +17,9 @@ import {
   Text,
   Box,
 } from "@chakra-ui/react";
-import { repeat } from "lodash";
 import Navbar from "./AdminNavbar";
-import { Navigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GrPrevious, GrNext } from "react-icons/gr";
-import axios from "axios";
-import { log } from "console";
 import { EditIcon } from "@chakra-ui/icons";
 import { DeleteIcon } from "@chakra-ui/icons";
 
@@ -40,7 +36,7 @@ const App: React.FC = () => {
   let totalPage = Math.ceil(totalP.length / 20);
   useEffect(() => {
     dispatch(fetchPage());
-  }, [data]);
+  }, [data, dispatch]);
   console.log(data, "AllProducts");
   ///******************* */ totalPage******************* */
 
@@ -84,7 +80,7 @@ const App: React.FC = () => {
               colorScheme="teal"
               size="sm"
               onClick={() => handlePagechange(-1)}
-              isDisabled={page == 1}
+              isDisabled={page === 1}
             >
               <GrPrevious />
             </Button>
@@ -97,7 +93,7 @@ const App: React.FC = () => {
               colorScheme="teal"
               size="sm"
               onClick={() => handlePagechange(1)}
-              isDisabled={page == totalPage}
+              isDisabled={page === totalPage}
             >
               <GrNext />
             </Button>
