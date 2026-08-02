@@ -1,6 +1,12 @@
 {
-  "buildCommand": "cross-env CI=false react-scripts build",
-  "installCommand": "npm install",
   "framework": "create-react-app",
-  "outputDirectory": "build"
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "build": {
+    "env": {
+      "CI": "false",
+      "DISABLE_ESLINT_PLUGIN": "true"
+    }
+  }
 }
