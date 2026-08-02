@@ -1,25 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import Navbar from "../Components/Navbar";
-import ProductImg from "../product-image/ProductImg.png";
-// import React from "react";
-// import Navbar from "./AdminNavbar";
-import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { UserObjectNew } from "../constrain";
-import Styles from "../Pages/YourOrder.module.css"
+import Styles from "../Pages/YourOrder.module.css";
 
-import {
-  Container,
-  HStack,
-  Heading,
-  Text,
-  Wrap,
-  WrapItem,
-} from "@chakra-ui/layout";
+import { Container, HStack, Heading } from "@chakra-ui/layout";
 import { Card, CardBody } from "@chakra-ui/card";
 import {
-  Avatar,
-  Button,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -32,32 +18,35 @@ import {
 import { useEffect } from "react";
 import { SingleUserFetch } from "../Redux/AdminReducer/action";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-export default function YourOrder() {
-  // const { id } = useParams();
+import { formatAddress } from "../api/orderHelpers";
 
+export default function YourOrder() {
   const single = useSelector((state: any) => state.data.singleUser);
   const isload = useSelector((state: any) => state.data.singleuserLoad);
   const id = useSelector((store: any) => store.authReducer.ActiveUser.id);
-  // const name = useSelector((store: any) => store.authReducer.ActiveUser.name);
+  const activeUser = useSelector((store: any) => store.authReducer.ActiveUser);
 
   const dispatch = useDispatch();
 
-  const [isHovered, setIsHovered] = useState(false);
-
   useEffect(() => {
-    dispatch(SingleUserFetch(id));
-  }, []);
+    if (id) {
+      dispatch(SingleUserFetch(id));
+    }
+  }, [id, dispatch]);
 
-  let { name, email, password, addToCart, orderPlaced, address } = single;
-  console.log(address,"address from ur order");
+  const name = single?.name || activeUser?.name || "";
+  const orderPlaced =
+    (single?.orderPlaced?.length ? single.orderPlaced : activeUser?.orderPlaced) ||
+    [];
+  const address =
+    (single?.address?.length ? single.address : activeUser?.address) || [];
+
+  const latestAddress = address.length > 0 ? address[address.length - 1] : null;
+  const latestAddressText = formatAddress(latestAddress);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleHover = () => {
     onOpen();
-  };
-
-  const handleClose = () => {
-    onClose();
   };
 
   return (
@@ -71,7 +60,7 @@ export default function YourOrder() {
         style={{ width: "100%", height: "400px", objectFit: "fill" }}
       />
 
-      {isload ? (
+      {isload && !orderPlaced.length ? (
         <Spinner
           thickness="4px"
           speed="0.65s"
@@ -82,15 +71,12 @@ export default function YourOrder() {
       ) : (
         <Container maxW={"100%"} style={{ margin: "0 auto" }}>
           <HStack spacing="24px">
-            {/* <==============================================OrderDetails===============================================> */}
             <Card
               width={"50%"}
               style={{ backgroundColor: "#d2f8d7", width: "100%" }}
             >
               <CardBody>
-                <Heading as="h4" size="md">
-                  {/* Order Details */}
-                </Heading>
+                <Heading as="h4" size="md"></Heading>
 
                 <div
                   style={{
@@ -102,15 +88,12 @@ export default function YourOrder() {
                   {orderPlaced && orderPlaced.length > 0 ? (
                     orderPlaced.map((el: any) => (
                       <div
+                        key={`${el.orderId || el.id}-${el.id}`}
                         style={{
-                          // display: "flex",
-                          // gap: "10px",
                           backgroundColor: "#b2b6b7",
-                          // justifyContent:"space-evenly"
                           borderRadius: "15px",
                         }}
                       >
-                        {/* <============================================Top Bar of Order Placed, Total && SHIP================>*/}
                         <div
                           style={{
                             marginLeft: "10px",
@@ -131,7 +114,6 @@ export default function YourOrder() {
                             <p>₹{el.price}</p>
                           </div>
 
-                          {/* <==========================================SHIP========================================================>                           */}
                           <div
                             style={{ marginLeft: "10px", marginRight: "10px" }}
                           >
@@ -140,12 +122,6 @@ export default function YourOrder() {
                               <button
                                 className="name_address"
                                 onMouseEnter={handleHover}
-                                // onMouseLeave={handleClose}
-                                // title={
-                                //   isHovered
-                                //     ? `${address.house_no}/${address.area} ${address.town}`
-                                //     : ""
-                                // }
                               >
                                 {name} <ChevronDownIcon />
                               </button>
@@ -155,12 +131,7 @@ export default function YourOrder() {
                                   <ModalHeader>{name}</ModalHeader>
                                   <ModalCloseButton />
                                   <ModalBody>
-                                    {/* <Lorem count={2} /> */}
-                                    {address&&address.length>0?`${address[address.length - 1].house_no}/${
-                                      address[address.length - 1].area
-                                    } ${address[address.length - 1].town},${
-                                      address[address.length - 1].pincod
-                                    }, India `:"Address is not Added"}
+                                    {el.shippingAddress || latestAddressText}
                                   </ModalBody>
                                 </ModalContent>
                               </Modal>
@@ -168,63 +139,46 @@ export default function YourOrder() {
                           </div>
                         </div>
 
-                        {/* <============================================END=====================================================>*/}
-
                         <br />
 
-                        {/* <================================================Lower MAin DIV=========================================>                        */}
-                        <div
-                          key={el.id}
-                          className={Styles.mainSub}
-                          // style={{
-                            // display: "flex",
-                            // gap: "10px",
-                            // backgroundColor: "#ffffff",
-                            // backgroundColor:"red"
-                            // justifyContent:"space-evenly"
-                          // }}
-
-                        >
-                          <div style={{height:"250px"}}> 
-                          {/* //subdiv1 */}
-                            <img className={Styles.orderimg} src={el.avatar} alt=""  />
+                        <div key={el.id} className={Styles.mainSub}>
+                          <div style={{ height: "250px" }}>
+                            <img
+                              className={Styles.orderimg}
+                              src={el.avatar}
+                              alt=""
+                            />
                           </div>
-                          {/* <hr /> */}
-                          {/* ========= single card starts here ===== */}
-                          {/* <div
-                            style={{
-                            
-                            }}
-                          >
-                            <b>{el.name}</b>
-                            <p>
-                              <b>Price:</b> {el.price}
-                            </p>
-                            <p>
-                              <b>Category:</b> {el.category}
-                            </p>
-                            <p>
-                              <b>About:</b> {el.about}
-                            </p>
-                            {el.info && (
-                              <p>
-                                <b>Info:</b> {el.info}
-                              </p>
-                            )}
-                           
-                          </div> */}
                           <table className={Styles.table}>
-                            <tr>
-                              <td>Product type </td><td>:{el.name}</td>
-                            </tr>
-                            <tr><td>Price</td><td>:{el.price}</td></tr>
-                            <tr><td>Category</td><td>:{el.category}</td></tr>
-                            <tr><td>About</td><td>:{el.about}</td></tr>
-                            <tr><td>Address</td><td>:{el.info||"No Address added"}</td></tr>
+                            <tbody>
+                              <tr>
+                                <td>Product type </td>
+                                <td>:{el.name}</td>
+                              </tr>
+                              <tr>
+                                <td>Price</td>
+                                <td>:{el.price}</td>
+                              </tr>
+                              <tr>
+                                <td>Category</td>
+                                <td>:{el.category || "—"}</td>
+                              </tr>
+                              <tr>
+                                <td>About</td>
+                                <td>:{el.about || "—"}</td>
+                              </tr>
+                              <tr>
+                                <td>Address</td>
+                                <td>
+                                  :
+                                  {el.shippingAddress ||
+                                    latestAddressText ||
+                                    "No Address added"}
+                                </td>
+                              </tr>
+                            </tbody>
                           </table>
-                          {/* ==========================      single order ends here === */}
                         </div>
-                        {/* <=======================================================Lower MAin DIV ENds here=========================> */}
                       </div>
                     ))
                   ) : (

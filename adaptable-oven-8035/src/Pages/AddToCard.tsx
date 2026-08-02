@@ -19,10 +19,9 @@ import {
 } from "@chakra-ui/react";
 import { FaTrash } from "react-icons/fa";
 import Navbar from "../Components/Navbar";
-import { DELETE_ITEM, LOGIN_SUCCESS } from "../Redux/AuthReducer/actionType";
-import { ActionToDelete, getUsers } from "../Redux/AuthReducer/action";
-import axios from "axios";
-import { Navigate } from "react-router";
+import { LOGIN_SUCCESS } from "../Redux/AuthReducer/actionType";
+import { refreshUserData } from "../Redux/AuthReducer/action";
+import { api } from "../api/axios";
 import { Link } from "react-router-dom";
 
 import Footer from "../Components/Footer";
@@ -33,41 +32,34 @@ const AddToCard = () => {
   const toast = useToast();
   const dispatch: any = useDispatch();
   const ActiveUser = useSelector((store: any) => store.authReducer.ActiveUser);
-  const userId = useSelector((store: any) => store.authReducer.ActiveUser.id);
   const cartItem = useSelector(
     (store: any) => store.authReducer.ActiveUser.addToCart
-  );
+  ) || [];
   const [total, setTotal] = useState<number>(0);
   const [tax, setTax] = useState<number>(0);
-  const AllUser = useSelector((store: any) => store.authReducer.Users);
-  //  console.log(cartItem)
+
   useEffect(() => {
-    dispatch(getUsers());
-    // getUsers(dispatch)
-  }, []);
-  // console.log(userId);
+    dispatch(refreshUserData());
+  }, [dispatch]);
+
   useEffect(() => {
     let sum = 0;
     for (let i = 0; i < cartItem.length; i++) {
-      sum += cartItem[i].price;
+      sum += cartItem[i].price * (cartItem[i].quantity || 1);
     }
     setTotal(sum);
     let taxcut = sum / 10;
     setTax(taxcut);
   }, [cartItem]);
 
-  const handleDelete = (id: number) => {
-    //  console.log(userId,id)
-    // dispatch(ActionToDelete(product));
-    axios
-      .put(`https://monkeyapi-2-0.onrender.com/users/${userId}`, {
-        ...ActiveUser,
-        addToCart: cartItem.filter((item: ProductObject) => item.id !== id),
-      })
+  const handleDelete = (id: number | string) => {
+    api
+      .delete(`/cart/${id}`)
       .then((response) => {
-        dispatch({ type: LOGIN_SUCCESS, payload: response.data });
-        // console.log('Data updated successfully:', response.data);
-        // setData(response.data.addToCart);
+        dispatch({
+          type: LOGIN_SUCCESS,
+          payload: { ...ActiveUser, addToCart: response.data },
+        });
       })
       .catch((error) => {
         console.error("Error updating data:", error);

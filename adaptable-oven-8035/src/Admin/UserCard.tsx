@@ -7,8 +7,8 @@ interface userObj{
   name:string;
   email:string;
   
-  password:string;
-  id?:number;
+  password?:string;
+  id?:number | string;
   addToCart:ProductObject[];
   orderPlaced:ProductObject[];
 }

@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ProductObject } from "../constrain";
@@ -7,17 +6,16 @@ import { Button, useToast } from "@chakra-ui/react";
 import Navbar from "../Components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { LOGIN_SUCCESS } from "../Redux/AuthReducer/actionType";
+import { api } from "../api/axios";
 
 import Footer from "../Components/Footer";
-
-import Navbar2 from "../Components/Navbar2";
 
 const SingleProductPage = () => {
   const { id } = useParams();
   const toast = useToast();
   const dispatch: any = useDispatch();
   const ActiveUser = useSelector((store: any) => store.authReducer.ActiveUser);
-  const userId = useSelector((store: any) => store.authReducer.ActiveUser.id);
+  const isAuth = useSelector((store: any) => store.authReducer.isAuth);
   const cartItem = useSelector(
     (store: any) => store.authReducer.ActiveUser.addToCart
   );
@@ -33,50 +31,63 @@ const SingleProductPage = () => {
     avatar: "",
   });
   useEffect(() => {
-    axios
-      .get(`https://monkeyapi-2-0.onrender.com/products/${id}`)
+    api
+      .get(`/products/${id}`)
       .then((res) => {
-        // console.log(res.data);
         setProduct(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [id]);
 
   const handleAddToCart = async (product: ProductObject) => {
-    console.log(product);
-    let isPrasent = cartItem.filter((item: ProductObject) => item == product);
-    console.log(isPrasent, "ISPresent");
-    try {
-      if (!isPrasent) {
-        toast({
-          title: `Product Is Already In The Cart.`,
-          description: "Same Product you cant add two time.",
-          status: "warning",
-          duration: 2000,
-          isClosable: true,
-        });
-      } else {
-        const updatedUser = {
-          ...ActiveUser,
-          addToCart: [...ActiveUser.addToCart, product],
-        };
+    if (!isAuth) {
+      toast({
+        title: "Please login first",
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+      });
+      navigate("/login");
+      return;
+    }
 
-        let res = await axios.put(
-          `https://monkeyapi-2-0.onrender.com/users/${userId}`,
-          updatedUser
-        );
-        dispatch({ type: LOGIN_SUCCESS, payload: res.data });
-        toast({
-          title: `Product added to cart.`,
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-      }
+    const alreadyInCart = (cartItem || []).some(
+      (item: ProductObject) => String(item.id) === String(product.id)
+    );
+
+    if (alreadyInCart) {
+      toast({
+        title: `Product Is Already In The Cart.`,
+        description: "Same Product you cant add two time.",
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      const res = await api.post(`/cart`, { productId: product.id, quantity: 1 });
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: { ...ActiveUser, addToCart: res.data },
+      });
+      toast({
+        title: `Product added to cart.`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
     } catch (error) {
       console.error("Failed to add product to cart", error);
+      toast({
+        title: "Failed to add to cart",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
     }
   };
   return (
@@ -101,7 +112,7 @@ const SingleProductPage = () => {
         <div>
           <h1>Precious Charms Love Collection</h1>
           <p>
-            {product.id % 2 === 0
+            {Number(product.id) % 2 === 0
               ? "Elegance Redefined, Precious Charms Jewelry. Timeless Beauty, Captivating Hearts. Embrace Luxury, Cherish Forever."
               : "Radiate Brilliance, Adorn Yourself with Exquisite Jewelry Crafted to Perfection"}
           </p>

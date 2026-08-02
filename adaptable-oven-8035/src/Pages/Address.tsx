@@ -1,18 +1,15 @@
-import axios from "axios";
-import { initial } from "lodash";
 import React, { useEffect } from "react";
 import { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { styled } from 'styled-components';
 
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import { useToast } from "@chakra-ui/toast";
-import { response } from "express";
 import { LOGIN_SUCCESS } from "../Redux/AuthReducer/actionType";
-// import { AnyAaaaRecord } from "dns";
+import { api } from "../api/axios";
 
 
 interface InitialState {
@@ -37,7 +34,6 @@ const initialState: InitialState = {
 export const Address = () => {
   const [areaData, setareaData] = useState(initialState);
   const [showCard, setShowCard] = useState(true)
-  // console.log("Address")
   const userId = useSelector((store: any) => store.authReducer.ActiveUser.id);
   const ActiveUser = useSelector((store: any) => store.authReducer.ActiveUser);
   const navigate = useNavigate();
@@ -51,15 +47,13 @@ export const Address = () => {
     })
 
   }
-  // console.log(ActiveUser.address[0].house_no, "AUser")
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     if (areaData.house_no === "" || areaData.mobile_number === "" || areaData.name === "" || areaData.pincod === "" || areaData.town === "") {
       toast({
         title: 'Please fill all fields!',
-        // description: 'your address is added successful.',
         status: 'warning',
         duration: 2000,
         isClosable: true
@@ -73,20 +67,13 @@ export const Address = () => {
     }
 
     try {
-      let key = "house_no";
-      let UniqueAddCopy = [...ActiveUser.address, areaData]
-      let uniqueAddress = [...new Map(UniqueAddCopy?.map((item: { [x: string]: any; }) =>
-        [item[key], item])).values()]
-
-      const updatedUser = {
-        ...ActiveUser,
-        address: [...uniqueAddress],
-
-      };
-      axios.put(`https://monkeyapi-2-0.onrender.com/users/${userId}`, updatedUser)
-        .then((res) => dispatch({ type: LOGIN_SUCCESS, payload: res.data })
-        )
-
+      const { data: created } = await api.post(`/address`, areaData);
+      const addresses = [...(ActiveUser.address || []), created];
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: { ...ActiveUser, address: addresses },
+      });
+      localStorage.setItem('selectedAddressId', created.id);
 
       navigate("/payment")
       toast({
@@ -98,8 +85,13 @@ export const Address = () => {
       });
     } catch (error) {
       console.error("Failed to add address to address", error);
+      toast({
+        title: 'Failed to save address',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
     }
-    // dispatch(postProduct(productData)) 
     setareaData(initialState)
   }
   // console.log(areaData,"Area")
@@ -107,9 +99,8 @@ export const Address = () => {
 
 
   useEffect(() => {
-    const ad = ActiveUser.address
-    // console.log(ad[ad.length-1])
-    if (ActiveUser.address.length !== 0) {
+    const ad = ActiveUser.address || []
+    if (ad.length !== 0) {
       setareaData(ad[ad.length - 1])
     }
   }, [])
@@ -138,15 +129,15 @@ export const Address = () => {
         }}>
 
           {
-            ActiveUser.address.length !== 0 && showCard
+            ActiveUser.address?.length !== 0 && showCard
               ?
               <div className="address-form form-card" >
                 <h2>Want to continue with previous address ?</h2>
                 <div className="address-card-details">
                   <h3>Full Name - {ActiveUser.address[ActiveUser.address.length - 1].name}</h3>
-                  <p>Mobile - {ActiveUser.address[ActiveUser.address.length - 1].mobile_number}</p>
-                  <p>Pin code - {ActiveUser.address[ActiveUser.address.length - 1].pincod}</p>
-                  <p>Address - {ActiveUser.address[ActiveUser.address.length - 1].house_no}</p>
+                  <p>Mobile - {ActiveUser.address[ActiveUser.address.length - 1].mobile_number || ActiveUser.address[ActiveUser.address.length - 1].mobileNumber}</p>
+                  <p>Pin code - {ActiveUser.address[ActiveUser.address.length - 1].pincod || ActiveUser.address[ActiveUser.address.length - 1].pincode}</p>
+                  <p>Address - {ActiveUser.address[ActiveUser.address.length - 1].house_no || ActiveUser.address[ActiveUser.address.length - 1].houseNo}</p>
                   <p>Area - {ActiveUser.address[ActiveUser.address.length - 1].area}</p>
                   <p>Town - {ActiveUser.address[ActiveUser.address.length - 1].town}</p>
                   <div>
@@ -154,7 +145,11 @@ export const Address = () => {
                 </div>
 
                 <div className="address-card-btns">
-                  <button className="payment-btn" onClick={() => { navigate("/payment") }}>Continue</button>
+                  <button className="payment-btn" onClick={() => {
+                    const last = ActiveUser.address[ActiveUser.address.length - 1];
+                    if (last?.id) localStorage.setItem('selectedAddressId', last.id);
+                    navigate("/payment");
+                  }}>Continue</button>
                   <button className="edit-btn" onClick={editUserDataHandler}>Edit</button>
                 </div>
               </div> :

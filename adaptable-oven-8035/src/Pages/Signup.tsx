@@ -1,96 +1,62 @@
-import React, { useState, useEffect, Dispatch } from 'react';
+import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import B1 from "../Images/B2.jpg";
 import { Link, useNavigate } from "react-router-dom";
-import { RootauthState, UserObject } from '../constrain';
-import { useDispatch, useSelector } from "react-redux"
-import { getUsers, SignUp } from '../Redux/AuthReducer/action';
+import { useDispatch } from "react-redux"
+import { SignUp } from '../Redux/AuthReducer/action';
 import { useToast } from '@chakra-ui/react';
-import Navbar from '../Components/Navbar';
 
 const Signup = () => {
   const toast = useToast();
-  const [user, setUser] = useState<UserObject>({
+  const [user, setUser] = useState({
     name: "",
-    email: "", password: "", addToCart: [],
-    orderPlaced: [], address: []
-
+    email: "",
+    password: "",
   });
   const navigate = useNavigate();
-  const dispatch: Dispatch<any> = useDispatch();
-  const AllUser = useSelector((store: any) => store.authReducer.Users)
-  // console.log(AllUser)
-  useEffect(() => {
+  const dispatch = useDispatch<any>();
 
-    dispatch(getUsers())
-    // getUsers(dispatch)
-
-  }, [])
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const newUser = { ...user, [name]: value };
     setUser(newUser);
   }
 
-  const handleSubmit = () => {
-    // console.log("Submit",user)
-    if (user.email === "" || user.password === "") {
-
+  const handleSubmit = async () => {
+    if (user.email === "" || user.password === "" || user.name === "") {
       toast({
         title: 'Please fill all fields!',
         description: 'can not leave email and password blank.',
         status: 'warning',
         duration: 2000,
         isClosable: true,
-
       });
-
-
-    } else if (Array.isArray(AllUser)) {
-
-
-      let userExist = AllUser.find((el: UserObject) => {
-        return el.email === user.email;
-      })
-      // console.log(userExist,"user")
-      if (userExist) {
-        // alert("You already have a account with this email address")
-        toast({
-          title: 'already registered email',
-          description: 'You already have a account with this email address.',
-          status: 'error',
-          duration: 2000,
-          isClosable: true,
-        });
-        setUser({
-          name: "",
-          email: "", password: "", addToCart: [],
-          orderPlaced: [], address: []
-
-        })
-      } else {
-        dispatch(SignUp(user))
-
-
-
-        // alert("your registration is successful")
-        setUser({
-          name: "",
-          email: "", password: "", addToCart: [],
-          orderPlaced: [], address: []
-
-        })
-        toast({
-          title: 'Signup Success',
-          description: 'your registration is successful.',
-          status: 'success',
-          duration: 2000,
-          isClosable: true,
-        });
-        navigate("/login");
-      }
+      return;
     }
 
+    try {
+      await dispatch(SignUp(user));
+      setUser({ name: "", email: "", password: "" });
+      toast({
+        title: 'Signup Success',
+        description: 'your registration is successful.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+      navigate("/login");
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message ||
+        'Could not create account. Email may already be registered.';
+      toast({
+        title: 'Signup failed',
+        description: Array.isArray(message) ? message.join(', ') : message,
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
   }
   return (<>
 

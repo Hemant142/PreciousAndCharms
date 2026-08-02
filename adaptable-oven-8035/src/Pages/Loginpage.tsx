@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import B1 from "../Images/B2.jpg"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { useDispatch, useSelector } from 'react-redux'
-import { RootauthState } from '../constrain'
-import { getUsers } from '../Redux/AuthReducer/action'
+import { useDispatch } from 'react-redux'
+import { Login } from '../Redux/AuthReducer/action'
 import { Dispatch } from 'redux'
-import { ADMIN_SUCCESS, LOGIN_SUCCESS } from '../Redux/AuthReducer/actionType'
+import { ADMIN_SUCCESS } from '../Redux/AuthReducer/actionType'
 import { useToast } from '@chakra-ui/react'
-import Navbar from '../Components/Navbar'
+
+const DEMO_ADMIN_EMAIL = 'admin123@gmail.com'
+const DEMO_ADMIN_PASSWORD = 'admin123'
 
 const Loginpage = () => {
    const toast = useToast();
@@ -18,45 +19,14 @@ const Loginpage = () => {
    const navigate = useNavigate()
    const location = useLocation();
 
-   let AllUser = useSelector((store: any) => store.authReducer.Users);
-
-   //   console.log(AllUser,"log");
-
-   useEffect(() => {
-
-      dispatch(getUsers())
-
-      // getUsers(dispatch)
-
-   }, [dispatch, AllUser])
-   console.log(AllUser, "log");
-   // const store =useSelector((store)=>store)
-   // console.log(store)
    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       let newCredentials = { ...credentials, [name]: value }
       setCredentials(newCredentials);
    };
 
-   const handleSubmit = () => {
-      // console.log("credential",credentials)
-
-      if (credentials.email === "admin123@gmail.com" || credentials.password === "admin123") {
-         dispatch({ type: ADMIN_SUCCESS })
-         navigate("/a/dashboard");
-
-         setCredentials({ email: "", password: "" })
-         toast({
-            title: 'welcome Admin to admin panel',
-            description: 'Admin Login successful.',
-            status: 'success',
-            duration: 2000,
-            isClosable: true,
-         });
-
-
-      } else if (credentials.email === "" || credentials.password === "") {
-         // alert("Please enter valid data");
+   const handleSubmit = async () => {
+      if (credentials.email === "" || credentials.password === "") {
          toast({
             title: 'Invalid Credentials!',
             description: 'Please fill all fields.',
@@ -64,49 +34,50 @@ const Loginpage = () => {
             duration: 2000,
             isClosable: true,
          });
+         return;
       }
-      else {
-         if (AllUser) {
-            let userExist = AllUser.find((el: any) => {
-               return el.email === credentials
-                  .email && el.password === credentials.password
-            });
-            // console.log(userExist, "prasent")
-            if (userExist) {
-               //   dispatch(Login({...userExist}))
-               dispatch({ type: LOGIN_SUCCESS, payload: { ...userExist } });
-               // alert("Login successfull")
-               toast({
-                  title: 'Login Success',
-                  description: ' successfully logged In.',
-                  status: 'success',
-                  duration: 2000,
-                  isClosable: true,
-               });
 
-               if (location.state == null) {
-                  navigate("/")
-               } else {
-                  navigate(location.state, { replace: true });
-               }
-               setCredentials({ email: "", password: "" })
-            }
-            else {
-               toast({
-                  title: 'Wrong credentials',
-                  description: 'wrong email address or Password.',
-                  status: 'error',
-                  duration: 2000,
-                  isClosable: true,
-               });
-               setCredentials({ email: "", password: "" })
-               // alert("Please enter valid credentials for login")
-            }
+      try {
+         // Always login via API so localStorage gets a real JWT.
+         // Demo admin (admin123@gmail.com / admin123) is seeded by the Nest API on startup.
+         const user = await (dispatch as any)(Login(credentials));
+         const isAdmin =
+            user?.role === 'admin' ||
+            (credentials.email === DEMO_ADMIN_EMAIL &&
+               credentials.password === DEMO_ADMIN_PASSWORD);
+
+         toast({
+            title: isAdmin ? 'welcome Admin to admin panel' : 'Login Success',
+            description: isAdmin
+               ? 'Admin Login successful.'
+               : ' successfully logged In.',
+            status: 'success',
+            duration: 2000,
+            isClosable: true,
+         });
+
+         if (isAdmin) {
+            dispatch({ type: ADMIN_SUCCESS });
+            navigate('/a/dashboard');
+         } else if (location.state == null) {
+            navigate("/")
+         } else {
+            navigate(location.state, { replace: true });
          }
-
+         setCredentials({ email: "", password: "" })
+      } catch {
+         toast({
+            title: 'Wrong credentials',
+            description:
+               credentials.email === DEMO_ADMIN_EMAIL
+                  ? 'Admin login failed. Restart the API so the demo admin can be seeded, then try again.'
+                  : 'wrong email address or Password.',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+         });
+         setCredentials({ email: "", password: "" })
       }
-
-
    }
    return (<>
 
@@ -135,7 +106,6 @@ const Loginpage = () => {
 }
 
 export default Loginpage
-
 
 
 
@@ -221,9 +191,6 @@ margin-bottom:20px;
   span:hover{
    background-color:white;
   }
-  /* :hover{
-   box-shadow: rgba(255, 253, 253, 0.966) 0px 54px 55px, rgba(250, 249, 249, 0.966) 0px -12px 30px, rgba(251, 250, 250, 0.943) 0px 4px 6px, rgba(253, 252, 252, 0.916) 0px 12px 13px, rgba(249, 248, 248, 0.961) 0px -3px 5px;
-   } */
 
 
 

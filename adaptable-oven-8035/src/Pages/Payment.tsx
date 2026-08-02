@@ -4,74 +4,51 @@ import { useNavigate } from 'react-router-dom';
 import { styled } from 'styled-components';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { ProductObject } from '../constrain';
 import { LOGIN_SUCCESS } from '../Redux/AuthReducer/actionType';
+import { api } from '../api/axios';
+import {
+  attachOrderAddresses,
+  enrichOrderProducts,
+} from '../api/orderHelpers';
 
 export const Payment = () => {
   const [paymentOption, setPaymentOption] = useState<string>('cash');
   const [isOpen, setIsOpen] = useState(false);
   const dispatch=useDispatch()
-  const userId =useSelector((store:any)=>store.authReducer.ActiveUser.id)
   const ActiveUser=useSelector((store:any)=>store.authReducer.ActiveUser);
-  const cartItem =useSelector((store:any)=>store.authReducer.ActiveUser.addToCart);
   const navigte=useNavigate()
-  // console.log(ActiveUser,"payment")
-  // const handleOpen = () => {
-  //   setIsOpen(true);
-  //   const updatedOrder={...ActiveUser,
-  //     orderPlaced: [...ActiveUser.addToCart, ...ActiveUser.orderPlaced],
-  //     addToCart:[],
-  //     // address:[...ActiveUser.address]
-  //   }
-  //   axios
-  //   .put(`https://monkeyapi-2-0.onrender.com/users/${userId}`, updatedOrder)
-  //   .then((response) => {
-  //     console.log('Data updated successfully:', response.data);
-  //     dispatch({type:LOGIN_SUCCESS, payload:response.data});
-      
-  //   })
-  //   .catch((error) => {
-  //     console.error('Error updating data:', error);
-  //   });
-  // };
-//  interface
-  function formatDate(date: Date): any {
-    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
-    
-    return new Intl.DateTimeFormat('en-IN', options).format(date);
-  }
-  
-  
 
-  
-  const currentDate = new Date();
-  const formattedDate = formatDate(currentDate);
-  
-  // console.log(formattedDate,"Date");
-  // console.log(ActiveUser,"payment")
-  const handleOpen = () => {
-    setIsOpen(true);
-    const updatedOrder={...ActiveUser,
-      orderPlaced: [...ActiveUser.addToCart.map((item:any) => ({
-        orderDate: formattedDate,
-        ...item
-     
-      })), ...ActiveUser.orderPlaced,],
-      addToCart:[],
-      // address:[...ActiveUser.address]
+  const handleOpen = async () => {
+    try {
+      const addressId =
+        localStorage.getItem('selectedAddressId') ||
+        ActiveUser?.address?.[ActiveUser.address.length - 1]?.id;
+
+      await api.post(`/orders`, { addressId });
+
+      const [cartRes, ordersRes, addressRes] = await Promise.all([
+        api.get(`/cart`).catch(() => ({ data: [] })),
+        api.get(`/orders/products`).catch(() => ({ data: [] })),
+        api.get(`/address`).catch(() => ({ data: [] })),
+      ]);
+
+      const enriched = await enrichOrderProducts(ordersRes.data || []);
+      const orderPlaced = await attachOrderAddresses(enriched);
+
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: {
+          ...ActiveUser,
+          addToCart: cartRes.data || [],
+          address: addressRes.data || ActiveUser.address || [],
+          orderPlaced,
+        },
+      });
+      setIsOpen(true);
+    } catch (error) {
+      console.error('Error placing order:', error);
     }
-    axios
-    .put(`https://monkeyapi-2-0.onrender.com/users/${userId}`, updatedOrder)
-    .then((response) => {
-      console.log('Data updated successfully:', response.data);
-      dispatch({type:LOGIN_SUCCESS,payload:response.data});
-      
-    })
-    .catch((error) => {
-      console.error('Error updating data:', error);
-    });
   };
 
   

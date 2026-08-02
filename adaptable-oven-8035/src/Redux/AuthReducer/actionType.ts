@@ -11,4 +11,5 @@ export const ADMIN_SUCCESS="ADMIN_SUCCESS"
 export const DELETE_ITEM="DELETE_ITEM";
 export const ADD_ITEM="ADD_ITEM";
 export const LOGOUT ="LOGOUT";
+export const AUTH_CHECKED = "AUTH_CHECKED";
 export {}

@@ -16,14 +16,13 @@ import {
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
-import axios from 'axios';
 import { useToast } from '@chakra-ui/react'
 import {EditIcon } from '@chakra-ui/icons'
 import { useNavigate } from 'react-router-dom';
+import { api } from '../api/axios';
 const EditPage = () => {
   let { id } = useParams();
   const toast=useToast();
-  let itemId = Number(id);
   const navigate =useNavigate();
   const data = useSelector((state: any) => state.data.data);
   const[Display, setDisplay] = useState([])
@@ -39,7 +38,8 @@ const EditPage = () => {
   const [updatedData, setUpdatedData] = useState([])
   const dispatch = useDispatch()
   useEffect(() => {
-    let Data = data.find((el: any) => el.id == itemId);
+    let Data = data.find((el: any) => String(el.id) === String(id));
+    if (!Data) return;
     setavatar(Data.avatar)
     setPrice(Data.price);
     setabout(Data.about);
@@ -49,14 +49,13 @@ const EditPage = () => {
     setName(Data.name)
     // setDisplay(Data)
     // handleUpdate
-  }, [updatedData,data,])
+  }, [updatedData,data,id])
 
   const handleUpdate = () => {
-    const newData = { price: +price, name: name, avatar: avatar, category: category, brand: brand, rating: +rating };
-    axios
-      .patch(`https://monkeyapi-2-0.onrender.com/products/${id}`, newData)
+    const newData = { price: +price, name: name, avatar: avatar, category: category, brand: brand, rating: +rating, about };
+    api
+      .patch(`/products/${id}`, newData)
       .then((res) => {
-        // console.log(res.data)
         toast({
           title: 'Save Success',
           description: 'Product Changed successfully',
@@ -64,8 +63,17 @@ const EditPage = () => {
           duration: 2000,  
           isClosable: true, 
         });
+        navigate("/a/AllProduct")
       })
-      navigate("/a/AllProduct")
+      .catch(() => {
+        toast({
+          title: 'Update failed',
+          description: 'Could not save product. Please login with a backend admin account.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      });
     console.log(newData, "NewData")
   }
   // handleUpdate

@@ -1,31 +1,22 @@
 
 import './App.css';
-import Navbar from './Components/Navbar';
-import Homepage from './Pages/Homepage';
-
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import AllRoutes from './Routes/AllRoutes';
-
-import AdminNavbar from './Admin/AdminNavbar';
-import Dashboard from './Admin/Dashboard';
-
-import Footer from './Components/Footer';
+import { restoreSession } from './Redux/AuthReducer/action';
 
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(restoreSession() as any);
+  }, [dispatch]);
+
   return (
-
   <div>
-   
-
-      {/* <Navbar/> */}
-      {/* <Homepage/> */}
-   {/* <AdminNavbar/> */}
-   {/* <Dashboard/> */}
       <AllRoutes/>
-      {/* <Footer/> */}
-  
       </div>
-   
   );
 }
 

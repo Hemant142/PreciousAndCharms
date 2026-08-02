@@ -25,20 +25,14 @@ export const SingleUser = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(SingleUserFetch(id));
-  }, []);
+    if (id) {
+      dispatch(SingleUserFetch(id));
+    }
+  }, [id, dispatch]);
 
-  let { name, email, password, addToCart, orderPlaced, address } = single;
-  console.log(single, "address");
-  // let add;
-  //  if(address){
-  //   add=address
-  //  }
-
-  //  console.log(typeof(add),"assdd");
-  const handleDelete = () => {
-
-  };
+  let { name, email, password, addToCart, orderPlaced, address } = single || {};
+  const latestAddress =
+    address && address.length > 0 ? address[address.length - 1] : null;
 
   return (
     <div>
@@ -79,32 +73,33 @@ export const SingleUser = () => {
                   Address Details
                 </Heading>
 
-                {address && address.length > 0 ? (
+                {latestAddress ? (
                   <div>
                     <p>
                       <b>Name :</b>
-                      {address[address.length - 1].name}
+                      {latestAddress.name}
                     </p>
                     <p>
                       <b>Mobile No :</b>
-                      {address[address.length - 1].mobile_number}
+                      {latestAddress.mobile_number ||
+                        latestAddress.mobileNumber}
                     </p>
                     <p>
                       <b>Pincode :</b>
-                      {address[address.length - 1].pincod}
+                      {latestAddress.pincod || latestAddress.pincode}
                     </p>
                     <p>
                       <b>House No :</b>
-                      {address[address.length - 1].house_no}
+                      {latestAddress.house_no || latestAddress.houseNo}
                     </p>
                     <p>
                       <b>Area :</b>
-                      {address[address.length - 1].area}
+                      {latestAddress.area}
                     </p>
 
                     <p>
                       <b>Town/City :</b>
-                      {address[address.length - 1].town}
+                      {latestAddress.town}
                     </p>
                   </div>
                 ) : (
@@ -193,7 +188,7 @@ export const SingleUser = () => {
                   {orderPlaced && orderPlaced.length > 0 ? (
                     orderPlaced.map((el: any) => (
                       <div
-                        key={el.id}
+                        key={`${el.orderId || "order"}-${el.id}`}
                         style={{
                           display: "flex",
                           gap: "10px",
@@ -209,32 +204,31 @@ export const SingleUser = () => {
                             <b>Price:</b> {el.price}
                           </p>
                           <p>
-                            <b>Category:</b> {el.category}
+                            <b>Category:</b> {el.category || "—"}
                           </p>
                           <p>
-                            <b>About:</b> {el.about}
+                            <b>About:</b> {el.about || "—"}
                           </p>
+                          {el.orderDate && (
+                            <p>
+                              <b>Order Date:</b> {el.orderDate}
+                            </p>
+                          )}
+                          {el.shippingAddress && (
+                            <p>
+                              <b>Ship To:</b> {el.shippingAddress}
+                            </p>
+                          )}
                           {el.info && (
                             <p>
                               <b>Info:</b> {el.info}
                             </p>
                           )}
                         </div>
-                        {/* <div>
-                          <Button
-                            colorScheme="red"
-                            marginTop={"5px"}
-                            onClick={handleDelete}
-                          >
-                            Order Placed{" "}
-                          </Button>
-                        </div> */}
-
-
                       </div>
                     ))
                   ) : (
-                    <p>No items in the cart.</p>
+                    <p>No orders placed yet.</p>
                   )}
                 </div>
               </CardBody>
