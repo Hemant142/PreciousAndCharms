@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cross-env CI=false react-scripts build",
+  "installCommand": "npm install",
+  "framework": "create-react-app",
+  "outputDirectory": "build"
+}
